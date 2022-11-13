@@ -3,18 +3,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Button = (props) => {
-    const { children, onClick, css } = props;
-
+    const { children, onClick, primary } = props;
     return (
         <button
             type="button"
             css={{
-                ...css,
                 borderRadius: '14px',
                 padding: '8px 12px',
                 border: 'none',
                 fontSize: '18px',
-                backgroundColor: '#6b7278',
+                backgroundColor: primary ? '#1900e5' : '#6b7278',
                 color: 'white',
                 margin: '15px',
                 cursor: 'pointer',
@@ -30,11 +28,12 @@ const Button = (props) => {
 Button.propTypes = {
     children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
     onClick: PropTypes.func.isRequired,
-    css: PropTypes.object,
+    // eslint-disable-next-line react/require-default-props
+    primary: PropTypes.bool,
 };
 
 Button.defaultProps = {
-    css: {},
+    primary: false,
 };
 
 export default Button;

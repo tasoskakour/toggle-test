@@ -115,10 +115,7 @@ const App = () => {
                     <>
                         <EmailsBox files={files} statuses={statuses} />
                         <div css={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button
-                                onClick={() => handleSubmit()}
-                                css={{ backgroundColor: '#1900e5' }}
-                            >
+                            <Button onClick={() => handleSubmit()} primary>
                                 Send Emails
                             </Button>
                         </div>
