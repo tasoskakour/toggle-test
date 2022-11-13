@@ -27,5 +27,6 @@ module.exports = {
                 unnamedComponents: 'arrow-function',
             },
         ],
+        'react/forbid-prop-types': 'off',
     },
 };

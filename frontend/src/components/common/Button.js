@@ -3,12 +3,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Button = (props) => {
-    const { children, ...rest } = props;
+    const { children, onClick, css } = props;
 
     return (
         <button
             type="button"
             css={{
+                ...css,
                 borderRadius: '14px',
                 padding: '8px 12px',
                 border: 'none',
@@ -19,13 +20,21 @@ const Button = (props) => {
                 cursor: 'pointer',
             }}
             // eslint-disable-next-line react/jsx-props-no-spreading
-            {...rest}
+            onClick={onClick}
         >
             {children}
         </button>
     );
 };
 
-Button.propTypes = PropTypes.any;
+Button.propTypes = {
+    children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+    onClick: PropTypes.func.isRequired,
+    css: PropTypes.object,
+};
+
+Button.defaultProps = {
+    css: {},
+};
 
 export default Button;

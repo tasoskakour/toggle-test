@@ -9,17 +9,19 @@ import Button from './common/Button';
 import Backdrop from './common/Backdrop';
 
 const App = () => {
-    const [emails, setEmails] = useState('');
+    const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [statuses, setStatuses] = useState({});
 
-    const handleFiles = async (files) => {
-        if (files.length === 0) return;
-        const ems = (
-            await Promise.all(Array.from(files).map(async (file) => extractEmailsFromFile(file)))
-        ).flat();
-        const uniqueEmails = unique(ems);
-        setEmails(uniqueEmails);
+    const handleFiles = async (readFiles) => {
+        if (readFiles.length === 0) return;
+        const fileEmails = await Promise.all(
+            Array.from(readFiles).map(async (file) => {
+                const emails = await extractEmailsFromFile(file);
+                return { fileName: file.name, emails };
+            })
+        );
+        setFiles(fileEmails);
     };
 
     const handleSubmit = async () => {
@@ -28,17 +30,20 @@ const App = () => {
             const response = await fetch(API_SEND_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ emails }),
+                body: JSON.stringify({ emails: unique(files.map(({ emails }) => emails).flat()) }),
             });
             if (response.ok) {
                 setStatuses(
-                    emails.reduce(
-                        (acc, email) => ({
-                            ...acc,
-                            [email]: 'sent',
-                        }),
-                        {}
-                    )
+                    files
+                        .map(({ emails }) => emails)
+                        .flat()
+                        .reduce(
+                            (acc, email) => ({
+                                ...acc,
+                                [email]: 'sent',
+                            }),
+                            {}
+                        )
                 );
             } else {
                 const json = await response.json();
@@ -55,13 +60,16 @@ const App = () => {
                     );
                 } else if (error === 'send_failure') {
                     setStatuses(
-                        emails.reduce(
-                            (acc, email) => ({
-                                ...acc,
-                                [email]: errorEmails.includes(email) ? 'send_failure' : 'sent',
-                            }),
-                            {}
-                        )
+                        files
+                            .map(({ emails }) => emails)
+                            .flat()
+                            .reduce(
+                                (acc, email) => ({
+                                    ...acc,
+                                    [email]: errorEmails.includes(email) ? 'send_failure' : 'sent',
+                                }),
+                                {}
+                            )
                     );
                 }
             }
@@ -103,9 +111,9 @@ const App = () => {
                     SEND EMAILS APP
                 </h2>
                 <DragDropFile handleFiles={handleFiles} />
-                {emails.length > 0 && (
+                {files.length > 0 && (
                     <>
-                        <EmailsBox emails={emails} statuses={statuses} />
+                        <EmailsBox files={files} statuses={statuses} />
                         <div css={{ display: 'flex', justifyContent: 'center' }}>
                             <Button
                                 onClick={() => handleSubmit()}
