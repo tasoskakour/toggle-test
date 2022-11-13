@@ -57,8 +57,12 @@ const EmailItem = (props) => {
 
     return (
         <li>
-            {email}
-            {status && <RenderStatus status={status} />}
+            <span data-testid={`testid-email-${email}`}>{email}</span>
+            {status && (
+                <span data-testid={`testid-email-${email}-status`}>
+                    <RenderStatus status={status} />
+                </span>
+            )}
         </li>
     );
 };
@@ -81,8 +85,11 @@ const EmailsBox = (props) => {
         <div css={{ margin: '16px' }}>
             {files.map(({ fileName, emails }) => (
                 <div key={fileName}>
-                    <div css={{ marginBottom: '8px', marginTop: '24px', padding: 0 }}>
-                        <span>({emails.length})</span>&nbsp;
+                    <div
+                        css={{ marginBottom: '8px', marginTop: '24px', padding: 0 }}
+                        data-testid={`testid-${fileName}`}
+                    >
+                        <span>({emails.length}) </span>
                         <span css={{ fontSize: '17px', fontWeight: 600 }}>{fileName}:</span>
                     </div>
                     <ul
